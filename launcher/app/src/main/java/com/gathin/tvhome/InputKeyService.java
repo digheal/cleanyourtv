@@ -40,7 +40,9 @@ public class InputKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        String app = appKeys.get(event.getKeyCode());
+        // The TV button follows the owner's pick on the TV first, then app_keys, then opens Inputs.
+        String app = event.getKeyCode() == KeyEvent.KEYCODE_TV ? RemoteKeys.tvButtonApp(this) : null;
+        if (app == null) app = appKeys.get(event.getKeyCode());
         if (app == null && !isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             if (app != null) {

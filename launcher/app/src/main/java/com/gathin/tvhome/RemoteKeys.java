@@ -19,6 +19,18 @@ import java.util.function.ToIntFunction;
 final class RemoteKeys {
     private RemoteKeys() { }
 
+    /**
+     * The app the remote's TV button opens, picked on the TV (hold Settings > TV button); null keeps Inputs.
+     * Its own preferences file, not the theme choices, so a theme push does not reset what the owner picked.
+     */
+    static String tvButtonApp(Context ctx) {
+        return ctx.getSharedPreferences("remote_keys", Context.MODE_PRIVATE).getString("tv_button", null);
+    }
+
+    static void setTvButtonApp(Context ctx, String pkg) {
+        ctx.getSharedPreferences("remote_keys", Context.MODE_PRIVATE).edit().putString("tv_button", pkg).apply();
+    }
+
     /** keycode -> package, with key names resolved by Android. */
     static Map<Integer, String> parseAppKeys(String[] entries) {
         return parseAppKeys(Arrays.asList(entries), KeyEvent::keyCodeFromString);
