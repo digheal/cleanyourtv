@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Weather glyph (Weather.java). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFD15C" android:pathData="M16,3.4a3.6,3.6 0 1,1 0,7.2a3.6,3.6 0 1,1 0,-7.2z" />
+    <path android:strokeColor="#FFFFD15C" android:strokeWidth="1.5" android:strokeLineCap="round" android:pathData="M16,0.6v1.2M21.6,7h1.2M19.96,3.04l0.85,-0.85M12.04,3.04l-0.85,-0.85" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M5.5,21A4,4 0 0,1 5,13.05A5.6,5.6 0 0,1 15.6,12.7A4.2,4.2 0 0,1 15.5,21Z" />
+</vector>

@@ -24,6 +24,18 @@
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memory %1$d MB free</string>
     <string name="stats_storage">Storage %1$s free</string>
+    <!-- Weather card (theme weather_latitude / weather_longitude). -->
+    <string name="weather_temp">%1$d°</string>
+    <string name="weather_high_low">H %1$d°  L %2$d°</string>
+    <string name="weather_today">%1$s  ·  %2$s</string>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly">Partly cloudy</string>
+    <string name="weather_cloudy">Cloudy</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_storm">Thunderstorms</string>
     <string name="dream_name">Clock</string>
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>

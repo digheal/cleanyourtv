@@ -86,6 +86,17 @@ final class Config {
     final List<File> wallpapers;
     final int wallpaperRotationMinutes;
     final int wallpaperDim;
+    /** Wallpaper blur behind the glass, 0 to 100 (config.json, wallpaper_blur); 0 keeps it sharp. */
+    final int wallpaperBlur;
+    /** Frosted, see-through dock band instead of the solid one (config.json, glass). */
+    final boolean glass;
+    /** Weather card place (config.json, weather_latitude / weather_longitude); NaN leaves the card off. */
+    final double weatherLatitude;
+    final double weatherLongitude;
+    /** Name shown on the weather card, e.g. the city (config.json, weather_place); may be empty. */
+    final String weatherPlace;
+    /** Degrees Fahrenheit instead of Celsius (config.json, weather_units "fahrenheit"). */
+    final boolean weatherFahrenheit;
     /** Whether the overlay file was present and parsed. */
     final boolean overlayApplied;
     /** Festive skin from a theme (festival, festival_until, greeting, accent_color); {@link Festival#NONE} if none. */
@@ -98,7 +109,14 @@ final class Config {
                    boolean showHomeSettingsShortcut, boolean showStats, boolean appLibrary, int backgroundColor, int skyIntensity,
                    int[] settingsKeycodes, boolean settingsKeyPanel, boolean wallpaperEnabled, File wallpaper, List<File> wallpapers,
                    int wallpaperRotationMinutes, int wallpaperDim, boolean overlayApplied,
-                   Festival festival, int[] inputKeycodes, List<String> appKeys) {
+                   Festival festival, int[] inputKeycodes, List<String> appKeys, int wallpaperBlur, boolean glass,
+                   double weatherLatitude, double weatherLongitude, String weatherPlace, boolean weatherFahrenheit) {
+        this.wallpaperBlur = wallpaperBlur;
+        this.glass = glass;
+        this.weatherLatitude = weatherLatitude;
+        this.weatherLongitude = weatherLongitude;
+        this.weatherPlace = weatherPlace;
+        this.weatherFahrenheit = weatherFahrenheit;
         this.inputKeycodes = inputKeycodes;
         this.appKeys = Collections.unmodifiableList(appKeys);
         this.dockApps = Collections.unmodifiableList(dockApps);
@@ -225,6 +243,12 @@ final class Config {
         if (!wallpaperEnabled) wallpaper = null;
         int rotationMinutes = json == null ? 0 : integer(json, "wallpaper_rotation_minutes", 0, 0, 1440);
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
+        int wallpaperBlur = json == null ? 0 : integer(json, "wallpaper_blur", 0, 0, 100);
+        boolean glass = json != null && bool(json, "glass", false);
+        double weatherLat = json == null ? Double.NaN : number(json, "weather_latitude", -90, 90);
+        double weatherLon = json == null ? Double.NaN : number(json, "weather_longitude", -180, 180);
+        String weatherPlace = json == null ? "" : string(json, "weather_place", "");
+        boolean fahrenheit = json != null && "fahrenheit".equalsIgnoreCase(string(json, "weather_units", ""));
         List<File> wallpapers = new ArrayList<>();
         if (rotationMinutes > 0 && dir != null && wallpaperEnabled) {
             wallpapers.addAll(WallpaperRotation.images(new File(dir, "wallpapers")));
@@ -239,7 +263,7 @@ final class Config {
                 shamsi, greetingName, moduleCards, reducedMotion, dockTitle, dockRow, reorderButton, vpn, homeSettings, showStats, library, background,
                 Math.max(0, Math.min(100, skyIntensity)), settingsKeycodes, settingsKeyPanel, wallpaperEnabled, wallpaper,
                 wallpapers, rotationMinutes, wallpaperDim, applied,
-                festival, inputKeycodes, appKeys);
+                festival, inputKeycodes, appKeys, wallpaperBlur, glass, weatherLat, weatherLon, weatherPlace, fahrenheit);
     }
 
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
@@ -310,6 +334,14 @@ final class Config {
         if (!(v instanceof Number)) return fallback;
         int i = ((Number) v).intValue();
         return i < min || i > max ? fallback : i;
+    }
+
+    /** A number in [min, max], or NaN when the key is missing or out of range. */
+    private static double number(JSONObject o, String key, double min, double max) {
+        Object v = o.opt(key);
+        if (!(v instanceof Number)) return Double.NaN;
+        double d = ((Number) v).doubleValue();
+        return d < min || d > max ? Double.NaN : d;
     }
 
     private static int color(JSONObject o, String key, int fallback) {

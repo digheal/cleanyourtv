@@ -52,6 +52,11 @@ is ignored, and a file that doesn't parse is ignored as a whole, so a theme can 
 | `wallpaper` | bool | Show `wallpaper.jpg` from the theme folder (`true`), or ignore it (`false`) |
 | `wallpaper_rotation_minutes` | 0 to 1440 | Randomly rotate images in the theme's `wallpapers/` folder at this interval; 0 keeps the single-image behaviour |
 | `wallpaper_dim` | 0 to 90 | Black overlay over wallpaper images, in percent; 0 by default |
+| `wallpaper_blur` | 0 to 100 | Blurs the wallpaper behind the glass, once per picture (no per-frame cost); 0 keeps it sharp |
+| `glass` | bool | Frosted, see-through dock band instead of the solid one; best with `wallpaper_blur`. Off unless set |
+| `weather_latitude`, `weather_longitude` | numbers | Turns on the weather card under the clock: now, today's high and low, and three days. Fetched from [Open-Meteo](https://open-meteo.com) (no key, no account) with the coordinates rounded to two decimals, at most every 30 minutes and only while Home is on screen. Off unless both are set |
+| `weather_place` | string | Name on the weather card, e.g. `"Oakland"`; empty shows only the conditions |
+| `weather_units` | string | `"fahrenheit"` for °F; °C otherwise |
 | `festival` | string | Turns on a festive skin: the network pill becomes a diya whose flame follows the connection, Inputs a temple bell, Settings a marigold, and the first Home of the day gets a petal shower. `dussehra` and `diwali` have built-in greetings |
 | `festival_until` | `YYYY-MM-DD` | Last day the festive skin shows; it switches itself off after that. A malformed date turns it off |
 | `greeting` | string | Replaces the time-of-day greeting while the festive skin is on |

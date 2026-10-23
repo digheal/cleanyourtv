@@ -29,6 +29,8 @@ final class WallpaperPlayer {
     private final Random random = new Random();
     private final int width;
     private final int height;
+    /** config.json wallpaper_blur, 0 to 100; 0 shows the picture sharp. */
+    private final int blur;
     private boolean active;
     private boolean closed;
     private boolean loading;
@@ -42,6 +44,7 @@ final class WallpaperPlayer {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         width = metrics.widthPixels;
         height = metrics.heightPixels;
+        blur = config.wallpaperBlur;
         image = new ImageView(context);
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
         image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -153,9 +156,29 @@ final class WallpaperPlayer {
                 options.inTargetDensity = scale[1];
             }
             options.inPreferredConfig = Bitmap.Config.RGB_565;
-            return BitmapFactory.decodeFile(file.getPath(), options);
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), options);
+            return bitmap == null || blur <= 0 ? bitmap : blurred(bitmap);
         } catch (Exception | OutOfMemoryError failure) {
             return null;
         }
+    }
+
+    /**
+     * A small blurred copy of the picture (see {@link Blur}); the ImageView scales it up with filtering. The
+     * full-size decode is recycled, so a blurred wallpaper holds far less memory than a sharp one.
+     */
+    private Bitmap blurred(Bitmap full) {
+        int factor = Blur.shrink(blur);
+        int w = Math.max(1, full.getWidth() / factor), h = Math.max(1, full.getHeight() / factor);
+        // Two filtered halvings before the last step keep the shrink from skipping pixels and shimmering.
+        Bitmap half = Bitmap.createScaledBitmap(full, Math.max(w, full.getWidth() / 4), Math.max(h, full.getHeight() / 4), true);
+        Bitmap small = Bitmap.createScaledBitmap(half, w, h, true);
+        if (half != full && half != small) half.recycle();
+        if (small != full) full.recycle();
+        int[] px = new int[w * h];
+        small.getPixels(px, 0, w, 0, 0, w, h);
+        if (small != full) small.recycle();
+        Blur.box(px, w, h, Blur.radius(blur));
+        return Bitmap.createBitmap(px, w, h, Bitmap.Config.ARGB_8888);
     }
 }
